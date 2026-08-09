@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'justinaugust123/docker-cicd-demo'
+        IMAGE_NAME = 'justinaugust123/myapp'
         IMAGE_TAG = 'latest'
     }
 
