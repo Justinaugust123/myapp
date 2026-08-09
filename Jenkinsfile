@@ -1,24 +1,38 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'justinaugust123/docker-cicd-demo'
+        IMAGE_TAG = 'latest'
+    }
+
     stages {
-        
+
+        stage('Check Variables') {
+            steps {
+                echo "IMAGE_NAME = ${env.IMAGE_NAME}"
+                echo "IMAGE_TAG = ${env.IMAGE_TAG}"
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                script {
-                    //dockerImage = docker.build("myapp:${env.BUILD_NUMBER}")
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." 
-                }
+                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+            }
+        }
+
+        stage('Remove Old Container') {
+            steps {
+                sh '''
+                    docker stop demo-container || true
+                    docker rm demo-container || true
+                '''
             }
         }
 
         stage('Run Container') {
             steps {
-                script {
-                    //dockerImage.run("-p 5000:5000")
-                    sh "docker run -d -p 5000:5000 --name demo-container ${IMAGE_NAME}:${IMAGE_TAG}" 
-
-                }
+                sh 'docker run -d -p 5000:5000 --name demo-container ${IMAGE_NAME}:${IMAGE_TAG}'
             }
         }
     }
