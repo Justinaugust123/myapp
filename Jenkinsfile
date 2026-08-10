@@ -1,33 +1,24 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "justinaugust123/my-website"
-    }
-
     stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
+        
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                script {
+                    //dockerImage = docker.build("myapp:${env.BUILD_NUMBER}")
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." 
+                }
             }
         }
 
-        stage('Test') {
+        stage('Run Container') {
             steps {
-                sh 'docker image inspect $IMAGE_NAME:latest'
-            }
-        }
+                script {
+                    //dockerImage.run("-p 5000:5000")
+                    sh "docker run -d -p 5000:5000 --name demo-container ${IMAGE_NAME}:${IMAGE_TAG}" 
 
-        stage('Push to Docker Hub') {
-            steps {
-                echo 'Push Docker image here'
+                }
             }
         }
     }
